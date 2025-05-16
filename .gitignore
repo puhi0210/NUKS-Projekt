@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+*.sqlite3
+
+# Python virtualenv
+venv/
+ENV/
+
+# Docker
+*.pid
+
+# VSCode
+.vscode/
