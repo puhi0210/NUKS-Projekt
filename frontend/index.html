@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head><title>Citati</title></head>
+<body>
+<h1>Motivacijski citat</h1>
+<div id="quote"></div>
+<div id="author"></div>
+<button onclick="getQuote()">Nov citat</button>
+<button onclick="saveFavorite()">Shrani</button>
+
+<h2>Priljubljeni</h2>
+<ul id="favorites"></ul>
+
+<script>
+let currentQuote = null;
+
+function getQuote() {
+    fetch("http://localhost:8000/quote")
+    .then(res => res.json())
+    .then(data => {
+        currentQuote = data;
+        document.getElementById("quote").innerText = data.quote;
+        document.getElementById("author").innerText = data.author;
+    });
+}
+
+function saveFavorite() {
+    fetch("http://localhost:8000/favorites", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(currentQuote)
+    }).then(() => loadFavorites());
+}
+
+function loadFavorites() {
+    fetch("http://localhost:8000/favorites")
+    .then(res => res.json())
+    .then(data => {
+        const list = document.getElementById("favorites");
+        list.innerHTML = "";
+        data.forEach(item => {
+            const li = document.createElement("li");
+            li.innerText = `${item.quote} – ${item.author}`;
+            const del = document.createElement("button");
+            del.innerText = "X";
+            del.onclick = () => deleteFavorite(item.id);
+            li.appendChild(del);
+            list.appendChild(li);
+        });
+    });
+}
+
+function deleteFavorite(id) {
+    fetch(`http://localhost:8000/favorites/${id}`, { method: "DELETE" })
+    .then(() => loadFavorites());
+}
+
+loadFavorites();
+</script>
+</body>
+</html>
